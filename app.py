@@ -167,8 +167,3 @@ with col_graf5:
 # --- Tabela de Dados Detalhados ---
 st.subheader("Dados Detalhados")
 st.dataframe(df_filtrado)
-
-# --- Tabela de Dados Detalhados ---
-st.subheader("Dados Detalhados")
-st.dataframe(df_filtrado)
-
