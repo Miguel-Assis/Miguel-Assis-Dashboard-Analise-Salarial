@@ -1,1 +1,1 @@
-# MDashboard de Análise Salarial
+# Dashboard de Análise Salarial
