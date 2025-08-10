@@ -32,13 +32,21 @@ contratos_selecionados = st.sidebar.multiselect("Tipo de Contrato", contratos_di
 tamanhos_disponiveis = sorted(df['tamanho_empresa'].unique())
 tamanhos_selecionados = st.sidebar.multiselect("Tamanho da Empresa", tamanhos_disponiveis, default=tamanhos_disponiveis)
 
+cargos_disponiveis = sorted(df['cargo'].unique())
+cargos_selecionados = st.sidebar.multiselect("Cargo", cargos_disponiveis, default=[])
+
+# Se nada for selecionado, mostra todos os cargos
+if not cargos_selecionados:
+    cargos_selecionados = cargos_disponiveis
+
 # --- Filtragem do DataFrame ---
 # O dataframe principal é filtrado com base nas seleções feitas na barra lateral.
 df_filtrado = df[
     (df['ano'].isin(anos_selecionados)) &
     (df['senioridade'].isin(senioridades_selecionadas)) &
     (df['contrato'].isin(contratos_selecionados)) &
-    (df['tamanho_empresa'].isin(tamanhos_selecionados)) 
+    (df['tamanho_empresa'].isin(tamanhos_selecionados)) &
+    (df['cargo'].isin(cargos_selecionados))
 ]
 
 # --- Conteúdo Principal ---
@@ -102,7 +110,7 @@ with col_graf2:
     else:
         st.warning("Nenhum dado para exibir no gráfico de distribuição.")
 
-col_graf3, col_graf4 = st.columns(2)
+col_graf3, col_graf4, = st.columns(2)
 
 with col_graf3:
     if not df_filtrado.empty:
@@ -137,6 +145,30 @@ with col_graf4:
     else:
         st.warning("Nenhum dado para exibir no gráfico de países.")
 
+col_graf5, = st.columns(1)
+
+with col_graf5:
+    if not df_filtrado.empty:
+        # Calcula a média salarial por ano
+        media_ano = df_filtrado.groupby('ano')['usd'].mean().reset_index()
+        grafico_linha = px.line(
+            media_ano,
+            x='ano',
+            y='usd',
+            markers=True,
+            title='Média salarial por ano',
+            labels={'ano': 'Ano', 'usd': 'Média salarial (USD)'}
+        )
+        grafico_linha.update_layout(title_x=0.1)
+        st.plotly_chart(grafico_linha, use_container_width=True)
+    else:
+        st.warning("Nenhum dado para exibir no gráfico de média salarial por ano.")
+
 # --- Tabela de Dados Detalhados ---
 st.subheader("Dados Detalhados")
 st.dataframe(df_filtrado)
+
+# --- Tabela de Dados Detalhados ---
+st.subheader("Dados Detalhados")
+st.dataframe(df_filtrado)
+
